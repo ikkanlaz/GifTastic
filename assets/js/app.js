@@ -13,6 +13,23 @@ $(document).ready(function () {
         }
     }
 
+    function addGif(data, collumn) {
+        var newGifContainer = $("<div></div>");
+        newGifContainer.addClass("gif-container");
+        var newGif = $("<img>");
+        newGif.addClass("gif");
+        newGif.attr("src", data.images.fixed_width_still.url);
+        newGif.attr("data-gif", data.images.fixed_width.url)
+        newGif.attr("data-still", data.images.fixed_width_still.url)
+        newGifContainer.append(newGif);
+
+        var newGifRating = $("<span></span>");
+        newGifRating.addClass("gif-rating");
+        newGifRating.text(data.rating.toUpperCase());
+        newGifContainer.append(newGifRating);
+        $(collumn).append(newGifContainer);
+    }
+
     $(".reaction-submit").on("click", function (event) {
         event.preventDefault();
         var newReaction = $("#reaction-input").val().trim();
@@ -20,10 +37,11 @@ $(document).ready(function () {
             reactionList.push(newReaction);
             renderButtons();
         }
+        $("#reaction-input").val("");
     });
 
     $(document).on("click", ".btn--reaction", function () {
-        $(".page-container").empty();
+        $(".gif-column").empty();
         var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + this.value + "&offset=" + pageNum + "&limit=24&api_key=dc6zaTOxFJmzC";
         $.ajax({
             url: queryURL,
@@ -31,27 +49,19 @@ $(document).ready(function () {
         }).done(function (response) {
             if (response.meta.status === 200) {
                 var numGifs = response.pagination.count;
-                var newGifBlock = $("<div></div>");
-                newGifBlock.addClass("gif-page");
                 for (var i = 0; i < numGifs; i++) {
-                    var newGifContainer = $("<div></div>");
-                    newGifContainer.addClass("gif-container");
-                    var newGif = $("<img>");
-                    newGif.addClass("gif");
-                    console.log(response.data[i].images.fixed_width_still.url);
-                    newGif.attr("src", response.data[i].images.fixed_width_still.url);
-                    newGif.attr("data-gif", response.data[i].images.fixed_width.url)
-                    newGif.attr("data-still", response.data[i].images.fixed_width_still.url)
-                    newGifContainer.append(newGif);
+                    var data = response.data[i];
+                    if (i < numGifs / 4) {
+                        addGif(data, "#col-1");
+                    } else if (i < numGifs / 2) {
+                        addGif(data, "#col-2");
+                    } else if (i < numGifs - (numGifs / 4)) {
+                        addGif(data, "#col-3");
+                    } else {
+                        addGif(data, "#col-4");
+                    }
 
-                    var newGifRating = $("<span></span>");
-                    newGifRating.addClass("gif-rating");
-                    newGifRating.text(response.data[i].rating.toUpperCase());
-                    newGifContainer.append(newGifRating);
-
-                    newGifBlock.append(newGifContainer);
                 }
-                $(".page-container").append(newGifBlock);
             }
         });
     });
