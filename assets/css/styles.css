@@ -46,3 +46,15 @@ body {
     width: 200px;
     height: auto;
 }
+
+@media only screen and (max-width: 815px) {
+    .page-container {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+@media only screen and (max-width: 615px) {
+    .page-container {
+        grid-template-columns: 1fr 1fr;
+    }
+}
