@@ -9,13 +9,47 @@ body {
     grid-gap: 20px;
     grid-template-columns: 10fr;
     grid-template-rows: 150px 1fr;
+    max-width: 815px;
+    margin: 0 auto;
 }
 
 .option-container {
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 40px 1fr;
+}
 
+.form-container {
+    margin: 10px auto;
+}
+
+label {
+    color: #F2C8FE; 
+}
+
+#reaction-submit {
+    font-size: 14px;
+    background-color: #F2C8FE;
+    border: 2px solid #A949C4;
+    border-radius: 5px;
+}
+
+#reaction-input {
+    color: #F2C8FE;
+    font-size: 16px;
+    background-color: #8516A3;
+    border: 2px solid #A949C4;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.btn {
+    color: #F2C8FE;
+    font-size: 16px;
+    margin: 5px;
+    background-color: #8516A3;
+    border: 2px solid #A949C4;
+    border-radius: 5px;
 }
 
 .page-container {
@@ -43,7 +77,7 @@ body {
 }
 
 .gif {
-    width: 200px;
+    width: 100%;
     height: auto;
 }
 
@@ -51,10 +85,36 @@ body {
     .page-container {
         grid-template-columns: 1fr 1fr 1fr;
     }
+    .container {
+        max-width: 615px;
+    }
 }
 
 @media only screen and (max-width: 615px) {
     .page-container {
         grid-template-columns: 1fr 1fr;
+    }
+    .container {
+        max-width: 405px;
+    }
+    .btn {
+        font-size: 12px;
+        margin: 3px;
+        border-radius: 5px;
+    }
+    #reaction-submit {
+        font-size: 10px;
+    }
+    #reaction-input {
+        font-size: 12px;
+    }
+}
+
+@media only screen and (max-width: 405px) {
+    .gif-column {
+        width: 150px;
+    }
+    .container {
+        max-width: 305px;
     }
 }

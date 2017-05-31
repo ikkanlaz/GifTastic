@@ -1,6 +1,8 @@
 $(document).ready(function () {
     var reactionList = ["happy", "excited", "sad", "love", "thumbs up", "shrug", "surprised", "awkward", "angry", "confused"];
     var pageNum = 0;
+    var imageColumnHeights = [];
+    var windowWidth = $(window).width();
 
     function renderButtons() {
         $(".btn-container").empty();
@@ -13,7 +15,7 @@ $(document).ready(function () {
         }
     }
 
-    function addGif(data, collumn) {
+    function addGif(data) {
         var newGifContainer = $("<div></div>");
         newGifContainer.addClass("gif-container");
         var newGif = $("<img>");
@@ -27,10 +29,37 @@ $(document).ready(function () {
         newGifRating.addClass("gif-rating");
         newGifRating.text(data.rating.toUpperCase());
         newGifContainer.append(newGifRating);
-        $(collumn).append(newGifContainer);
+        var minIndex = indexOfMin(imageColumnHeights);
+        $("#col-" + minIndex).append(newGifContainer);
+        imageColumnHeights[minIndex] += parseInt(data.images.fixed_width_still.height);
     }
 
-    $(".reaction-submit").on("click", function (event) {
+    function indexOfMin(arr) {
+        if (arr.length === 0) {
+            return -1;
+        }
+        var min = arr[0];
+        var minIndex = 0;
+        for(var i = 1; i <arr.length; i++) {
+            if(arr[i] < min) {
+                minIndex = i;
+                min = arr[i];
+            }
+        }
+        return minIndex;
+    }
+
+    function setNumberOfColumns () {
+        if (windowWidth >= 815) {
+            imageColumnHeights = [0, 0, 0, 0];
+        } else if (windowWidth < 815 && windowWidth >= 615) {
+            imageColumnHeights = [0, 0, 0];
+        } else if (windowWidth < 615) {
+            imageColumnHeights = [0,0];
+        }
+    }
+
+    $("#reaction-submit").on("click", function (event) {
         event.preventDefault();
         var newReaction = $("#reaction-input").val().trim();
         if (newReaction.length !== 0) {
@@ -42,7 +71,8 @@ $(document).ready(function () {
 
     $(document).on("click", ".btn--reaction", function () {
         $(".gif-column").empty();
-        var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + this.value + "&offset=" + pageNum + "&limit=24&api_key=dc6zaTOxFJmzC";
+        setNumberOfColumns();
+        var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + this.value + "&offset=" + pageNum + "&limit=36&api_key=dc6zaTOxFJmzC";
         $.ajax({
             url: queryURL,
             method: "GET"
@@ -50,17 +80,7 @@ $(document).ready(function () {
             if (response.meta.status === 200) {
                 var numGifs = response.pagination.count;
                 for (var i = 0; i < numGifs; i++) {
-                    var data = response.data[i];
-                    if (i < numGifs / 4) {
-                        addGif(data, "#col-1");
-                    } else if (i < numGifs / 2) {
-                        addGif(data, "#col-2");
-                    } else if (i < numGifs - (numGifs / 4)) {
-                        addGif(data, "#col-3");
-                    } else {
-                        addGif(data, "#col-4");
-                    }
-
+                    addGif(response.data[i]);
                 }
             }
         });
@@ -74,7 +94,9 @@ $(document).ready(function () {
         }
     });
 
+    $(window).resize(function () {
+        windowWidth = $(window).width();
+    })
+
     renderButtons();
-
-
 });
