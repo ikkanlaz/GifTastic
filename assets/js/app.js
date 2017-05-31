@@ -54,10 +54,13 @@ $(document).ready(function () {
 
     function setNumberOfColumns() {
         if (windowWidth >= 815) {
+            limit = 36;
             imageColumnHeights = [0, 0, 0, 0];
         } else if (windowWidth < 815 && windowWidth >= 615) {
+            limit = 24;
             imageColumnHeights = [0, 0, 0];
         } else if (windowWidth < 615) {
+            limit = 12;
             imageColumnHeights = [0, 0];
         }
     }
