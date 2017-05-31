@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    var reactionList = ["happy", "excited", "sad", "love", "thumbs up", "shrug", "surprised", "awkward", "angry", "confused"];
+    var reactionList = ["thumbs up", "happy", "excited", "sad", "love",  "shrug", "surprised", "angry", "awkward",  "confused"];
     var offset = 0;
     var limit = 36;
     var imageColumnHeights = [];
