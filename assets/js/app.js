@@ -1,8 +1,11 @@
 $(document).ready(function () {
     var reactionList = ["happy", "excited", "sad", "love", "thumbs up", "shrug", "surprised", "awkward", "angry", "confused"];
-    var pageNum = 0;
+    var offset = 0;
+    var limit = 36;
     var imageColumnHeights = [];
     var windowWidth = $(window).width();
+    var currentSearch;
+
 
     function renderButtons() {
         $(".btn-container").empty();
@@ -40,8 +43,8 @@ $(document).ready(function () {
         }
         var min = arr[0];
         var minIndex = 0;
-        for(var i = 1; i <arr.length; i++) {
-            if(arr[i] < min) {
+        for (var i = 1; i < arr.length; i++) {
+            if (arr[i] < min) {
                 minIndex = i;
                 min = arr[i];
             }
@@ -49,14 +52,29 @@ $(document).ready(function () {
         return minIndex;
     }
 
-    function setNumberOfColumns () {
+    function setNumberOfColumns() {
         if (windowWidth >= 815) {
             imageColumnHeights = [0, 0, 0, 0];
         } else if (windowWidth < 815 && windowWidth >= 615) {
             imageColumnHeights = [0, 0, 0];
         } else if (windowWidth < 615) {
-            imageColumnHeights = [0,0];
+            imageColumnHeights = [0, 0];
         }
+    }
+
+    function getGifs() {
+        var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + currentSearch + "&offset=" + offset + "&limit=" + limit + "&api_key=dc6zaTOxFJmzC";
+        $.ajax({
+            url: queryURL,
+            method: "GET"
+        }).done(function (response) {
+            if (response.meta.status === 200) {
+                var numGifs = response.pagination.count;
+                for (var i = 0; i < numGifs; i++) {
+                    addGif(response.data[i]);
+                }
+            }
+        });
     }
 
     $("#reaction-submit").on("click", function (event) {
@@ -71,20 +89,12 @@ $(document).ready(function () {
 
     $(document).on("click", ".btn--reaction", function () {
         $(".gif-column").empty();
+        pageNum = 0;
         setNumberOfColumns();
-        var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + this.value + "&offset=" + pageNum + "&limit=36&api_key=dc6zaTOxFJmzC";
-        $.ajax({
-            url: queryURL,
-            method: "GET"
-        }).done(function (response) {
-            if (response.meta.status === 200) {
-                var numGifs = response.pagination.count;
-                for (var i = 0; i < numGifs; i++) {
-                    addGif(response.data[i]);
-                }
-            }
-        });
+        currentSearch = this.value;
+        getGifs();
     });
+
     $(document).on("click", ".gif", function () {
         var url = $(this).attr("src");
         if (url !== $(this).attr("data-gif")) {
@@ -97,6 +107,13 @@ $(document).ready(function () {
     $(window).resize(function () {
         windowWidth = $(window).width();
     })
+
+    $(window).scroll(function () {
+        if ($(window).scrollTop() + $(window).height() == $(document).height()) {
+            offset += limit;
+            getGifs();
+        }
+    });
 
     renderButtons();
 });
