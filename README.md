@@ -1,1 +1,3 @@
 # GifTastic
+
+A web app
